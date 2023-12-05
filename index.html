@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eBay API example</title>
+
+  <style>
+    #map {
+      width: 400px;
+      height: 600px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>eBay API exampe</h1>
+
+  <div id="result"></div>
+  <script>
+
+    const ebayAppId = 'BenUlson-Memberso-PRD-4f48071bf-e4ea6ba6';
+
+    function searchEbay(query) {
+      const url = `https://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsAdvanced&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=${ebayAppId}&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&keywords=${encodeURIComponent(query)}&paginationInput.entriesPerPage=10&sortOrder=StartTimeNewest&siteid=0`;
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const resultDiv = document.getElementById('result');
+          data.findItemsAdvancedResponse[0].searchResult[0].item.forEach(item => {
+            const title = item.title[0];
+            const imageUrl = item.galleryURL[0];
+            const price = item.sellingStatus[0].currentPrice[0].__value__;
+
+            const itemDiv = document.createElement('div');
+            const titleElement = document.createElement('h2');
+            const imageElement = document.createElement('img');
+            const priceElement = document.createElement('p');
+
+            titleElement.textContent = title;
+            imageElement.src = imageUrl;
+            priceElement.textContent = `Price: $${price}`;
+
+            itemDiv.appendChild(titleElement);
+            itemDiv.appendChild(imageElement);
+            itemDiv.appendChild(priceElement);
+
+            resultDiv.appendChild(itemDiv);
+          });
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    searchEbay('dark duel stories sealed');
+
+  </script>
+</body>
+
+</html>
